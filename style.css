@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+}
+
+.page-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Pulsante in alto a destra per selezionare sfondo */
+.top-right {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Card generiche */
+.card {
+  background: rgba(255,255,255,0.9);
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Riquadro media */
+.media-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto; /* scroll orizzontale */
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Container audio */
+.audio-container {
+  margin-bottom: 10px;
+}
+
+/* Toolbar testo */
+.toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.format-btn {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.text-editor {
+  min-height: 100px;
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* Sezione pulsante salva */
+.save-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Sfondo personalizzato */
+.page-container.custom-background {
+  background-size: cover;
+  background-position: center;
+}
