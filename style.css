@@ -1,72 +1,150 @@
-body {
+/* Reset di base */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #f0f0f0;
 }
 
-.page-container {
-  position: relative;
-  width: 100%;
+body {
+  font-family: 'Arial', sans-serif;
+  background: #f1f1f1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
+}
+
+/* Wrapper generale */
+.main-wrapper {
+  width: 100%;
+  max-width: 400px; /* per centrare in un layout mobile-friendly */
+  margin: 20px auto;
+  padding: 10px;
+}
+
+/* Card principale */
+.teddy-card {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   padding: 20px;
 }
 
-/* Pulsante in alto a destra per selezionare sfondo */
+/* Pulsante + in alto a destra */
 .top-right {
   position: absolute;
   top: 20px;
   right: 20px;
 }
-
-/* Card generiche */
-.card {
-  background: rgba(255,255,255,0.9);
-  margin: 20px 0;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-/* Riquadro media */
-.media-container {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto; /* scroll orizzontale */
-  max-width: 100%;
-  margin-bottom: 10px;
-}
-
-/* Container audio */
-.audio-container {
-  margin-bottom: 10px;
-}
-
-/* Toolbar testo */
-.toolbar {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.format-btn {
-  margin-left: 5px;
+.btn-plus {
+  background: #666;
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 24px;
   cursor: pointer;
 }
 
+/* Sezioni interne (foto, audio, testo) */
+.section {
+  margin-bottom: 20px; 
+  /* ogni sezione spaziata dalla successiva */
+}
+
+/* Sezione Foto */
+.photo-section {
+  text-align: center;
+}
+.photo-carousel {
+  position: relative;
+  width: 100%;
+  height: 200px; 
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.placeholder {
+  color: #aaa;
+  font-size: 1.1rem;
+}
+/* se hai più foto, potresti trasformare .photo-carousel in uno slider
+   con overflow-x scroll, o usare librerie specifiche */
+
+/* Pulsanti generici per aggiungere file */
+.add-btn {
+  display: inline-block;
+  background: #0088ff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Sezione Audio */
+.audio-section {
+  text-align: center;
+}
+.audio-placeholder {
+  width: 100%;
+  height: 50px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+}
+
+/* Sezione Testo */
+.text-section {
+  /* Non necessariamente centrata, 
+     potrebbe essere normale testo a larghezza piena */
+}
+.toolbar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.format-btn {
+  background: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  padding: 4px 8px;
+}
 .text-editor {
   min-height: 100px;
   border: 1px solid #ccc;
+  border-radius: 5px;
   padding: 8px;
+  overflow-y: auto;
 }
 
-/* Sezione pulsante salva */
-.save-container {
+/* Sezione Salva */
+.save-section {
   text-align: center;
-  margin-top: 20px;
+}
+.save-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-/* Sfondo personalizzato */
-.page-container.custom-background {
+/* Classe per sfondo custom */
+.teddy-card.custom-bg {
   background-size: cover;
   background-position: center;
+  color: #fff; /* se lo sfondo è scuro */
 }
