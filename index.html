@@ -1,54 +1,55 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teddy NFC - Pagina Personalizzata</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<div class="app-container">
+<!-- Contenitore principale con bordo arrotondato -->
+<div class="outer-card" id="outerCard">
 
-  <!-- Pulsante per scegliere uno sfondo globale -->
-  <div class="choose-bg">
-    <button id="backgroundBtn" class="bg-btn">Scegli Sfondo</button>
+  <!-- Pulsante per sfondo (in alto a destra) -->
+  <button class="plus-btn" id="bgPlusBtn">+</button>
+  <input 
+    type="file" 
+    id="bgInput" 
+    accept="image/*" 
+    style="display: none;"
+  />
+
+  <!-- BOX grande per le foto -->
+  <div class="photo-box">
+    <div class="photo-view" id="photoView">
+      <!-- Segnaposto iniziale, se non ci sono foto -->
+      <div class="photo-placeholder" id="photoPlaceholder">
+        + Add photo
+      </div>
+    </div>
+    <!-- Dots di navigazione (carousel indicator) -->
+    <div class="dots-container" id="dotsContainer">
+      <!-- i puntini verranno creati dinamicamente -->
+    </div>
+
+    <!-- Pulsante per caricare foto -->
+    <button class="file-btn" id="addPhotoBtn">+ Aggiungi Foto</button>
     <input 
       type="file" 
-      id="backgroundInput" 
+      id="photoInput" 
       accept="image/*" 
+      multiple 
       style="display: none;"
     />
   </div>
 
-  <!-- Card: Sezione Foto/Video (con scrolling orizzontale) -->
-  <div class="card section" id="photoSection">
-    <h2 class="section-title">Foto/Video</h2>
-    <div class="photo-gallery" id="mediaContainer">
-      <!-- Placeholder iniziale (se non ci sono foto) -->
-      <div class="placeholder" id="photoPlaceholder">
-        Nessuna foto caricata
-      </div>
+  <!-- BOX per Audio -->
+  <div class="audio-box">
+    <div class="audio-inner" id="audioInner">
+      + Add audio
     </div>
-    <button id="addMediaBtn" class="action-btn">+ Aggiungi Foto/Video</button>
-    <input 
-      type="file" 
-      id="mediaInput" 
-      accept="image/*,video/*" 
-      multiple
-      style="display: none;"
-    />
-  </div>
-
-  <!-- Card: Sezione Audio -->
-  <div class="card section" id="audioSection">
-    <h2 class="section-title">Audio</h2>
-    <div class="audio-container" id="audioContainer">
-      <div class="placeholder">
-        Nessun audio caricato
-      </div>
-    </div>
-    <button id="addAudioBtn" class="action-btn">+ Aggiungi Audio</button>
+    <button class="file-btn" id="addAudioBtn">+ Aggiungi Audio</button>
     <input 
       type="file" 
       id="audioInput" 
@@ -57,39 +58,17 @@
     />
   </div>
 
-  <!-- Card: Sezione Testo -->
-  <div class="card section" id="textSection">
-    <h2 class="section-title">Testo</h2>
-    
-    <!-- Barra formattazione -->
-    <div class="toolbar" id="toolbar">
-      <select id="fontSelect" class="tool-item">
-        <option value="Arial">Arial</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Courier New">Courier New</option>
-      </select>
-      <button class="tool-item" id="boldBtn"><b>B</b></button>
-      <button class="tool-item" id="italicBtn"><i>I</i></button>
-      <button class="tool-item" id="underlineBtn"><u>U</u></button>
-      <input type="color" id="colorPicker" class="tool-item" />
-    </div>
-
-    <!-- Editor di testo -->
-    <div 
-      class="text-editor" 
-      id="textEditor" 
-      contenteditable="true">
-      <!-- Placeholder iniziale -->
-      Scrivi qui il tuo messaggio...
-    </div>
+  <!-- BOX testo con bordo nero -->
+  <div class="text-box" id="textBox">
+    <textarea id="textArea" class="text-area" placeholder="Add text"></textarea>
   </div>
 
-  <!-- Pulsante Salvataggio definitivo -->
-  <div class="save-section">
+  <!-- Pulsante SALVA (opzionale, se vuoi bloccare tutto) -->
+  <div class="save-container">
     <button id="saveBtn" class="save-btn">Salva</button>
   </div>
 
-</div> <!-- fine app-container -->
+</div> <!-- fine outer-card -->
 
 <script src="script.js"></script>
 </body>
