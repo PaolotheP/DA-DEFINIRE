@@ -1,75 +1,323 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teddy NFC - Pagina Personalizzata</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina NFC Interattiva</title>
+    <style>
+        /* ----- STILI DI BASE ----- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 500px;
+            max-width: 90%;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border: 1px solid #ddd;
+            position: relative;
+            /* Lo sfondo personalizzato lo gestiremo in JS (background-image) */
+            background-size: cover;
+            background-position: center;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        /* ----- BACKGROUND ----- */
+        .background-section label {
+            display: inline-block;
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .background-section input[type="file"] {
+            display: none;
+        }
+
+        /* ----- FOTO ----- */
+        #photoSection label {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        #photoSection input[type="file"] {
+            display: none;
+        }
+        .photo-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .photo-preview img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+        .photo-controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .photo-controls button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: none;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .photo-controls button:hover {
+            background-color: #0056b3;
+        }
+
+        /* ----- AUDIO ----- */
+        #audioSection label {
+            display: inline-block;
+            background-color: #17a2b8;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #audioSection input[type="file"] {
+            display: none;
+        }
+        .audio-preview {
+            margin-top: 10px;
+        }
+        /* Pulsante per registrare audio */
+        .record-btn {
+            display: inline-block;
+            background-color: #dc3545;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            margin: 10px 5px 0 0;
+        }
+        .record-btn:hover {
+            background-color: #bd2130;
+        }
+
+        /* ----- TESTO ----- */
+        .text-section textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        /* Se vuoi nascondere un elemento dinamicamente */
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
+    <div class="container" id="mainContainer">
+        
+        <!-- Sezione per SCEGLIERE SFONDO -->
+        <div class="section background-section" id="backgroundSection">
+            <label for="bgInput">Add background</label>
+            <input type="file" id="bgInput" accept="image/*" onchange="previewBackground()">
+        </div>
 
-<!-- Contenitore principale con bordo arrotondato -->
-<div class="outer-card" id="outerCard">
+        <!-- Sezione FOTO -->
+        <div class="section" id="photoSection">
+            <label for="photoInput">Add photo</label>
+            <input type="file" id="photoInput" accept="image/*" multiple onchange="previewImages()">
+        </div>
+        <div id="photoPreview" class="photo-preview"></div>
+        <div class="photo-controls hidden" id="photoControls">
+            <button onclick="prevImage()">Previous</button>
+            <button onclick="nextImage()">Next</button>
+        </div>
 
-  <!-- Pulsante per sfondo (in alto a destra) -->
-  <button class="plus-btn" id="bgPlusBtn">+</button>
-  <input 
-    type="file" 
-    id="bgInput" 
-    accept="image/*" 
-    style="display: none;"
-  />
+        <!-- Sezione AUDIO -->
+        <div class="section" id="audioSection">
+            <label for="audioInput">Add audio</label>
+            <input type="file" id="audioInput" accept="audio/*" onchange="previewAudio()">
+            
+            <!-- Pulsante per registrare audio -->
+            <button class="record-btn" onclick="toggleRecording()">
+                Record Audio
+            </button>
+        </div>
+        <div id="audioPreview" class="audio-preview"></div>
 
-  <!-- BOX grande per le foto -->
-  <div class="photo-box">
-    <div class="photo-view" id="photoView">
-      <!-- Segnaposto iniziale, se non ci sono foto -->
-      <div class="photo-placeholder" id="photoPlaceholder">
-        + Add photo
-      </div>
+        <!-- Sezione TESTO -->
+        <div class="section text-section" id="textSection">
+            <label for="mainText">Add text</label>
+            <textarea id="mainText" placeholder="Scrivi qui il tuo messaggio..."></textarea>
+        </div>
+
     </div>
-    <!-- Dots di navigazione (carousel indicator) -->
-    <div class="dots-container" id="dotsContainer">
-      <!-- i puntini verranno creati dinamicamente -->
-    </div>
 
-    <!-- Pulsante per caricare foto -->
-    <button class="file-btn" id="addPhotoBtn">+ Aggiungi Foto</button>
-    <input 
-      type="file" 
-      id="photoInput" 
-      accept="image/*" 
-      multiple 
-      style="display: none;"
-    />
-  </div>
+    <script>
+        /********************************************************
+         *                GESTIONE BACKGROUND
+         ********************************************************/
+        function previewBackground() {
+            const fileInput = document.getElementById('bgInput');
+            const container = document.getElementById('mainContainer');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.style.backgroundImage = `url('${e.target.result}')`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
-  <!-- BOX per Audio -->
-  <div class="audio-box">
-    <div class="audio-inner" id="audioInner">
-      + Add audio
-    </div>
-    <button class="file-btn" id="addAudioBtn">+ Aggiungi Audio</button>
-    <input 
-      type="file" 
-      id="audioInput" 
-      accept="audio/*" 
-      style="display: none;"
-    />
-  </div>
+        /********************************************************
+         *                GESTIONE FOTO
+         ********************************************************/
+        let currentImageIndex = 0;
+        let imageFiles = [];
 
-  <!-- BOX testo con bordo nero -->
-  <div class="text-box" id="textBox">
-    <textarea id="textArea" class="text-area" placeholder="Add text"></textarea>
-  </div>
+        function previewImages() {
+            const input = document.getElementById('photoInput');
+            const preview = document.getElementById('photoPreview');
+            const controls = document.getElementById('photoControls');
 
-  <!-- Pulsante SALVA (opzionale, se vuoi bloccare tutto) -->
-  <div class="save-container">
-    <button id="saveBtn" class="save-btn">Salva</button>
-  </div>
+            imageFiles = Array.from(input.files);
 
-</div> <!-- fine outer-card -->
+            if (imageFiles.length > 0) {
+                showImage(0); // Mostra la prima foto
+                controls.classList.remove('hidden'); // Mostra i pulsanti
+                // Nascondi l'etichetta e input se vuoi “bloccate” dopo l’upload
+                document.getElementById('photoSection').querySelector('label').style.display = 'none';
+                input.style.display = 'none';
+            }
+        }
 
-<script src="script.js"></script>
+        function showImage(index) {
+            const preview = document.getElementById('photoPreview');
+            preview.innerHTML = ''; // Puliamo
+
+            if (imageFiles[index]) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const img = document.createElement('img');
+                    img.src = reader.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(imageFiles[index]);
+            }
+        }
+
+        function nextImage() {
+            if (currentImageIndex < imageFiles.length - 1) {
+                currentImageIndex++;
+                showImage(currentImageIndex);
+            }
+        }
+
+        function prevImage() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                showImage(currentImageIndex);
+            }
+        }
+
+        /********************************************************
+         *                GESTIONE AUDIO + REGISTRAZIONE
+         ********************************************************/
+        let mediaRecorder;
+        let recordedChunks = [];
+        let isRecording = false;
+
+        function previewAudio() {
+            const input = document.getElementById('audioInput');
+            const preview = document.getElementById('audioPreview');
+            preview.innerHTML = ''; // Svuota
+
+            const file = input.files[0];
+            if (file) {
+                const audio = document.createElement('audio');
+                audio.controls = true;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    audio.src = reader.result;
+                    preview.appendChild(audio);
+                };
+                reader.readAsDataURL(file);
+
+                // Nascondi label e input se vuoi “bloccate” dopo l’upload
+                document.getElementById('audioSection').querySelector('label').style.display = 'none';
+                input.style.display = 'none';
+            }
+        }
+
+        // Funzione che fa partire / fermare la registrazione
+        async function toggleRecording() {
+            if (!isRecording) {
+                // Inizia a registrare
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    recordedChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        // Creiamo un blob e lo riproduciamo
+                        const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+
+                        const preview = document.getElementById('audioPreview');
+                        const audioEl = document.createElement('audio');
+                        audioEl.controls = true;
+                        audioEl.src = audioUrl;
+                        preview.innerHTML = ''; // Svuoto
+                        preview.appendChild(audioEl);
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    alert('Registrazione avviata...');
+                } catch (err) {
+                    console.error('Errore nell’accesso al microfono:', err);
+                    alert('Impossibile accedere al microfono.');
+                }
+            } else {
+                // Ferma la registrazione
+                mediaRecorder.stop();
+                isRecording = false;
+                alert('Registrazione terminata.');
+            }
+        }
+
+    </script>
 </body>
 </html>
