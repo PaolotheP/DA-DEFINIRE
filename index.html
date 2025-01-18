@@ -1,323 +1,416 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina NFC Interattiva</title>
-    <style>
-        /* ----- STILI DI BASE ----- */
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagina NFC Interattiva</title>
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            width: 500px;
-            max-width: 90%;
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border: 1px solid #ddd;
-            position: relative;
-            /* Lo sfondo personalizzato lo gestiremo in JS (background-image) */
-            background-size: cover;
-            background-position: center;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        /* ----- BACKGROUND ----- */
-        .background-section label {
-            display: inline-block;
-            background-color: #28a745;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-        .background-section input[type="file"] {
-            display: none;
-        }
+  <!-- Font un po' romantico -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap" 
+    rel="stylesheet"
+  >
 
-        /* ----- FOTO ----- */
-        #photoSection label {
-            display: inline-block;
-            background-color: #007BFF;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-        #photoSection input[type="file"] {
-            display: none;
-        }
-        .photo-preview {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .photo-preview img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 20px;
-        }
-        .photo-controls {
-            text-align: center;
-            margin-top: 10px;
-        }
-        .photo-controls button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: none;
-            background-color: #007BFF;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .photo-controls button:hover {
-            background-color: #0056b3;
-        }
+  <style>
+    /* STILI DI BASE */
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
 
-        /* ----- AUDIO ----- */
-        #audioSection label {
-            display: inline-block;
-            background-color: #17a2b8;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        #audioSection input[type="file"] {
-            display: none;
-        }
-        .audio-preview {
-            margin-top: 10px;
-        }
-        /* Pulsante per registrare audio */
-        .record-btn {
-            display: inline-block;
-            background-color: #dc3545;
-            color: #fff;
-            padding: 8px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: none;
-            margin: 10px 5px 0 0;
-        }
-        .record-btn:hover {
-            background-color: #bd2130;
-        }
+      /* Font "Dancing Script" */
+      font-family: 'Dancing Script', cursive;
+      font-size: 18px;
+    }
+    .container {
+      width: 500px;
+      max-width: 90%;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border: 1px solid #ddd;
+      position: relative;
 
-        /* ----- TESTO ----- */
-        .text-section textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 1rem;
-            font-family: inherit;
-            resize: vertical;
-        }
+      /* Per gestire uno sfondo personalizzato via JS */
+      background-size: cover;
+      background-position: center;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    /* ---------- BACKGROUND ---------- */
+    .background-section label {
+      display: inline-block;
+      background-color: #28a745;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .background-section input[type="file"] {
+      display: none;
+    }
 
-        /* Se vuoi nascondere un elemento dinamicamente */
-        .hidden {
-            display: none;
-        }
-    </style>
+    /* ---------- FOTO ---------- */
+    #photoSection label {
+      display: inline-block;
+      background-color: #007BFF;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    #photoSection input[type="file"] {
+      display: none;
+    }
+    .photo-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .photo-preview img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+    .photo-controls {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .photo-controls button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      border: none;
+      background-color: #007BFF;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .photo-controls button:hover {
+      background-color: #0056b3;
+    }
+
+    /* ---------- AUDIO ---------- */
+    #audioSection label {
+      display: inline-block;
+      background-color: #17a2b8;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    #audioSection input[type="file"] {
+      display: none;
+    }
+    .audio-preview {
+      margin-top: 10px;
+    }
+    /* Pulsanti per registrare audio */
+    .record-btn, .stop-btn {
+      display: inline-block;
+      background-color: #dc3545;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    .record-btn:hover, .stop-btn:hover {
+      background-color: #bd2130;
+    }
+
+    /* ---------- TESTO + TOOLBAR ---------- */
+    .text-section label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .toolbar button, .toolbar select, .toolbar input[type="color"] {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+    .toolbar select {
+      min-width: 120px;
+    }
+
+    .text-editor {
+      min-height: 120px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      outline: none;
+      background-color: #fff;
+      resize: none;
+    }
+
+    /* ---------- UTILE ---------- */
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container" id="mainContainer">
-        
-        <!-- Sezione per SCEGLIERE SFONDO -->
-        <div class="section background-section" id="backgroundSection">
-            <label for="bgInput">Add background</label>
-            <input type="file" id="bgInput" accept="image/*" onchange="previewBackground()">
-        </div>
-
-        <!-- Sezione FOTO -->
-        <div class="section" id="photoSection">
-            <label for="photoInput">Add photo</label>
-            <input type="file" id="photoInput" accept="image/*" multiple onchange="previewImages()">
-        </div>
-        <div id="photoPreview" class="photo-preview"></div>
-        <div class="photo-controls hidden" id="photoControls">
-            <button onclick="prevImage()">Previous</button>
-            <button onclick="nextImage()">Next</button>
-        </div>
-
-        <!-- Sezione AUDIO -->
-        <div class="section" id="audioSection">
-            <label for="audioInput">Add audio</label>
-            <input type="file" id="audioInput" accept="audio/*" onchange="previewAudio()">
-            
-            <!-- Pulsante per registrare audio -->
-            <button class="record-btn" onclick="toggleRecording()">
-                Record Audio
-            </button>
-        </div>
-        <div id="audioPreview" class="audio-preview"></div>
-
-        <!-- Sezione TESTO -->
-        <div class="section text-section" id="textSection">
-            <label for="mainText">Add text</label>
-            <textarea id="mainText" placeholder="Scrivi qui il tuo messaggio..."></textarea>
-        </div>
-
+  <div class="container" id="mainContainer">
+    <!-- Sezione per SCEGLIERE SFONDO -->
+    <div class="section background-section">
+      <label for="bgInput">Aggiungi sfondo</label>
+      <input type="file" id="bgInput" accept="image/*">
     </div>
 
-    <script>
-        /********************************************************
-         *                GESTIONE BACKGROUND
-         ********************************************************/
-        function previewBackground() {
-            const fileInput = document.getElementById('bgInput');
-            const container = document.getElementById('mainContainer');
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    container.style.backgroundImage = `url('${e.target.result}')`;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+    <!-- Sezione FOTO -->
+    <div class="section" id="photoSection">
+      <label for="photoInput">Aggiungi foto</label>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+    </div>
+    <div id="photoPreview" class="photo-preview"></div>
+    <div class="photo-controls hidden" id="photoControls">
+      <button onclick="prevImage()">Foto precedente</button>
+      <button onclick="nextImage()">Foto successiva</button>
+    </div>
 
-        /********************************************************
-         *                GESTIONE FOTO
-         ********************************************************/
-        let currentImageIndex = 0;
-        let imageFiles = [];
+    <!-- Sezione AUDIO -->
+    <div class="section" id="audioSection">
+      <label for="audioInput">Aggiungi audio</label>
+      <input type="file" id="audioInput" accept="audio/*">
+      
+      <!-- Pulsanti per registrare audio -->
+      <button class="record-btn" id="startRecordBtn">Inizia Registrazione</button>
+      <button class="stop-btn hidden" id="stopRecordBtn">Termina Registrazione</button>
+    </div>
+    <div id="audioPreview" class="audio-preview"></div>
 
-        function previewImages() {
-            const input = document.getElementById('photoInput');
-            const preview = document.getElementById('photoPreview');
-            const controls = document.getElementById('photoControls');
+    <!-- Sezione TESTO con toolbar -->
+    <div class="section text-section">
+      <label>Scrivi il tuo messaggio</label>
+      <!-- Toolbar di formattazione -->
+      <div class="toolbar">
+        <select id="fontSelect">
+          <option value="Arial">Arial</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Lucida Sans">Lucida Sans</option>
+          <option value="Monospace">Monospace</option>
+        </select>
+        <button type="button" id="boldBtn"><b>B</b></button>
+        <button type="button" id="italicBtn"><i>I</i></button>
+        <button type="button" id="underlineBtn"><u>U</u></button>
+        <input type="color" id="colorPicker" value="#000000">
+      </div>
+      <!-- Div contenteditable per testo formattabile -->
+      <div id="textEditor" class="text-editor" contenteditable="true">
+      </div>
+    </div>
 
-            imageFiles = Array.from(input.files);
+  </div><!-- .container -->
 
-            if (imageFiles.length > 0) {
-                showImage(0); // Mostra la prima foto
-                controls.classList.remove('hidden'); // Mostra i pulsanti
-                // Nascondi l'etichetta e input se vuoi “bloccate” dopo l’upload
-                document.getElementById('photoSection').querySelector('label').style.display = 'none';
-                input.style.display = 'none';
-            }
-        }
+  <script>
+    /********************************************************
+     *                GESTIONE BACKGROUND
+     ********************************************************/
+    const bgInput = document.getElementById('bgInput');
+    const mainContainer = document.getElementById('mainContainer');
+    bgInput.addEventListener('change', () => {
+      const file = bgInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          mainContainer.style.backgroundImage = `url('${e.target.result}')`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
-        function showImage(index) {
-            const preview = document.getElementById('photoPreview');
-            preview.innerHTML = ''; // Puliamo
+    /********************************************************
+     *                GESTIONE FOTO (carousel a step)
+     ********************************************************/
+    let currentImageIndex = 0;
+    let imageFiles = [];
 
-            if (imageFiles[index]) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const img = document.createElement('img');
-                    img.src = reader.result;
-                    preview.appendChild(img);
-                };
-                reader.readAsDataURL(imageFiles[index]);
-            }
-        }
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoControls = document.getElementById('photoControls');
 
-        function nextImage() {
-            if (currentImageIndex < imageFiles.length - 1) {
-                currentImageIndex++;
-                showImage(currentImageIndex);
-            }
-        }
+    photoInput.addEventListener('change', () => {
+      imageFiles = Array.from(photoInput.files);
+      if (imageFiles.length > 0) {
+        showImage(0);
+        photoControls.classList.remove('hidden');
+        // Nascondi l'etichetta e input, se vuoi bloccare dopo l'upload
+        document.getElementById('photoSection').querySelector('label').style.display = 'none';
+        photoInput.style.display = 'none';
+      }
+    });
 
-        function prevImage() {
-            if (currentImageIndex > 0) {
-                currentImageIndex--;
-                showImage(currentImageIndex);
-            }
-        }
+    function showImage(index) {
+      photoPreview.innerHTML = '';
+      if (imageFiles[index]) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          photoPreview.appendChild(img);
+        };
+        reader.readAsDataURL(imageFiles[index]);
+      }
+    }
+    function nextImage() {
+      if (currentImageIndex < imageFiles.length - 1) {
+        currentImageIndex++;
+        showImage(currentImageIndex);
+      }
+    }
+    function prevImage() {
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
+        showImage(currentImageIndex);
+      }
+    }
 
-        /********************************************************
-         *                GESTIONE AUDIO + REGISTRAZIONE
-         ********************************************************/
-        let mediaRecorder;
-        let recordedChunks = [];
-        let isRecording = false;
+    /********************************************************
+     *                GESTIONE AUDIO + REGISTRAZIONE
+     ********************************************************/
+    let mediaRecorder;
+    let recordedChunks = [];
+    let isRecording = false;
 
-        function previewAudio() {
-            const input = document.getElementById('audioInput');
-            const preview = document.getElementById('audioPreview');
-            preview.innerHTML = ''; // Svuota
+    const audioInput = document.getElementById('audioInput');
+    const audioPreview = document.getElementById('audioPreview');
+    const startRecordBtn = document.getElementById('startRecordBtn');
+    const stopRecordBtn = document.getElementById('stopRecordBtn');
 
-            const file = input.files[0];
-            if (file) {
-                const audio = document.createElement('audio');
-                audio.controls = true;
-                const reader = new FileReader();
-                reader.onload = () => {
-                    audio.src = reader.result;
-                    preview.appendChild(audio);
-                };
-                reader.readAsDataURL(file);
+    // Caricamento file audio
+    audioInput.addEventListener('change', () => {
+      audioPreview.innerHTML = '';
+      const file = audioInput.files[0];
+      if (file) {
+        const audioEl = document.createElement('audio');
+        audioEl.controls = true;
+        const reader = new FileReader();
+        reader.onload = () => {
+          audioEl.src = reader.result;
+          audioPreview.appendChild(audioEl);
+        };
+        reader.readAsDataURL(file);
 
-                // Nascondi label e input se vuoi “bloccate” dopo l’upload
-                document.getElementById('audioSection').querySelector('label').style.display = 'none';
-                input.style.display = 'none';
-            }
-        }
+        // Nascondo label e input
+        document.getElementById('audioSection').querySelector('label').style.display = 'none';
+        audioInput.style.display = 'none';
+      }
+    });
 
-        // Funzione che fa partire / fermare la registrazione
-        async function toggleRecording() {
-            if (!isRecording) {
-                // Inizia a registrare
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    recordedChunks = [];
+    // Avvio registrazione
+    startRecordBtn.addEventListener('click', async () => {
+      if (isRecording) return;
 
-                    mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0) {
-                            recordedChunks.push(event.data);
-                        }
-                    };
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
 
-                    mediaRecorder.onstop = () => {
-                        // Creiamo un blob e lo riproduciamo
-                        const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
 
-                        const preview = document.getElementById('audioPreview');
-                        const audioEl = document.createElement('audio');
-                        audioEl.controls = true;
-                        audioEl.src = audioUrl;
-                        preview.innerHTML = ''; // Svuoto
-                        preview.appendChild(audioEl);
-                    };
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+          const audioUrl = URL.createObjectURL(audioBlob);
 
-                    mediaRecorder.start();
-                    isRecording = true;
-                    alert('Registrazione avviata...');
-                } catch (err) {
-                    console.error('Errore nell’accesso al microfono:', err);
-                    alert('Impossibile accedere al microfono.');
-                }
-            } else {
-                // Ferma la registrazione
-                mediaRecorder.stop();
-                isRecording = false;
-                alert('Registrazione terminata.');
-            }
-        }
+          audioPreview.innerHTML = '';
+          const audioEl = document.createElement('audio');
+          audioEl.controls = true;
+          audioEl.src = audioUrl;
+          audioPreview.appendChild(audioEl);
+        };
 
-    </script>
+        mediaRecorder.start();
+        isRecording = true;
+
+        // Mostra bottone "Termina", nascondi "Inizia"
+        startRecordBtn.style.display = 'none';
+        stopRecordBtn.classList.remove('hidden');
+
+        alert('Registrazione avviata...');
+      } catch (err) {
+        console.error('Errore nell’accesso al microfono:', err);
+        alert('Impossibile accedere al microfono (HTTPS richiesto).');
+      }
+    });
+
+    // Termine registrazione
+    stopRecordBtn.addEventListener('click', () => {
+      if (!isRecording) return;
+
+      mediaRecorder.stop();
+      isRecording = false;
+      alert('Registrazione terminata.');
+
+      // Nascondo "Termina", se vuoi potresti non farlo
+      stopRecordBtn.classList.add('hidden');
+    });
+
+    /********************************************************
+     *            GESTIONE TESTO FORMATTAZIONE
+     ********************************************************/
+    const textEditor = document.getElementById('textEditor');
+
+    const fontSelect = document.getElementById('fontSelect');
+    const boldBtn = document.getElementById('boldBtn');
+    const italicBtn = document.getElementById('italicBtn');
+    const underlineBtn = document.getElementById('underlineBtn');
+    const colorPicker = document.getElementById('colorPicker');
+
+    fontSelect.addEventListener('change', () => {
+      document.execCommand('fontName', false, fontSelect.value);
+    });
+    boldBtn.addEventListener('click', () => {
+      document.execCommand('bold', false, null);
+    });
+    italicBtn.addEventListener('click', () => {
+      document.execCommand('italic', false, null);
+    });
+    underlineBtn.addEventListener('click', () => {
+      document.execCommand('underline', false, null);
+    });
+    colorPicker.addEventListener('input', () => {
+      document.execCommand('foreColor', false, colorPicker.value);
+    });
+
+    /* 
+     * Importante: alcuni browser potrebbero bloccare 'fontName' se 
+     * i font non sono disponibili localmente. 
+     * 
+     * Se vuoi font custom da Google Fonts, potresti non riuscire 
+     * a impostarli con execCommand. 
+     * 
+     * In ogni caso, i "common fonts" (Arial, Georgia, etc.) 
+     * di solito funzionano in docCommand. 
+     */
+  </script>
 </body>
 </html>
