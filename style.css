@@ -1,4 +1,4 @@
-/* Reset di base */
+/* RESET DI BASE */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,81 +6,42 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  background: #f1f1f1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  font-family: sans-serif;
+  background: #f5f5f5;
 }
 
-/* Wrapper generale */
-.main-wrapper {
-  width: 100%;
-  max-width: 400px; /* per centrare in un layout mobile-friendly */
-  margin: 20px auto;
+/* CONTENITORE PRINCIPALE */
+.app-container {
+  max-width: 500px; /* larghezza max, ottimo per mobile */
+  margin: 0 auto;
   padding: 10px;
+  position: relative;
 }
 
-/* Card principale */
-.teddy-card {
-  position: relative;
+/* CARD GENERICHE (angoli arrotondati e ombra leggera) */
+.card {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin-bottom: 20px;
 }
 
-/* Pulsante + in alto a destra */
-.top-right {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-.btn-plus {
-  background: #666;
-  color: #fff;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* Sezioni interne (foto, audio, testo) */
-.section {
-  margin-bottom: 20px; 
-  /* ogni sezione spaziata dalla successiva */
-}
-
-/* Sezione Foto */
-.photo-section {
-  text-align: center;
-}
-.photo-carousel {
-  position: relative;
-  width: 100%;
-  height: 200px; 
-  border: 2px dashed #ccc;
-  border-radius: 8px;
+/* SEZIONI */
+.section-title {
   margin-bottom: 10px;
-  overflow: hidden; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.placeholder {
-  color: #aaa;
   font-size: 1.1rem;
+  color: #333;
 }
-/* se hai più foto, potresti trasformare .photo-carousel in uno slider
-   con overflow-x scroll, o usare librerie specifiche */
 
-/* Pulsanti generici per aggiungere file */
-.add-btn {
-  display: inline-block;
-  background: #0088ff;
+/* PULSANTE SCEGLI SFONDO (posizionato in alto a destra) */
+.choose-bg {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.bg-btn {
+  background: #666;
   color: #fff;
   border: none;
   padding: 8px 14px;
@@ -88,49 +49,93 @@ body {
   cursor: pointer;
 }
 
-/* Sezione Audio */
-.audio-section {
-  text-align: center;
-}
-.audio-placeholder {
-  width: 100%;
-  height: 50px;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
+/* SEZIONE FOTO / GALLERIA ORIZZONTALE */
+.photo-gallery {
+  display: flex;
+  flex-wrap: nowrap; /* no wrap, orizzontale */
+  gap: 10px;
+  overflow-x: auto; /* abilita lo scroll orizzontale */
+  padding-bottom: 10px;
   margin-bottom: 10px;
+  scroll-snap-type: x mandatory; /* se vuoi snapping */
+}
+
+/* Nascondi scrollbar su alcuni browser, se vuoi */
+.photo-gallery::-webkit-scrollbar {
+  height: 8px; /* scrollbar orizzontale */
+}
+.photo-gallery::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 8px;
+}
+
+/* Placeholder generico */
+.placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #aaa;
 }
 
-/* Sezione Testo */
-.text-section {
-  /* Non necessariamente centrata, 
-     potrebbe essere normale testo a larghezza piena */
+/* Gli elementi caricati (img, video) 
+   li forziamo a un'altezza max per stare in riga. */
+.photo-gallery img,
+.photo-gallery video {
+  border-radius: 8px;
+  max-height: 200px;
+  object-fit: cover;
+  scroll-snap-align: start; /* se usi scroll-snap */
 }
+
+/* SEZIONE AUDIO */
+.audio-container {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* PULSANTE AZIONE (Aggiungi Foto, Aggiungi Audio...) */
+.action-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* SEZIONE TESTO */
 .toolbar {
   display: flex;
   gap: 5px;
   margin-bottom: 8px;
 }
-.format-btn {
+.tool-item {
   background: #eee;
   border: 1px solid #ccc;
   cursor: pointer;
   padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
 }
 .text-editor {
-  min-height: 100px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
+  min-height: 120px;
   padding: 8px;
-  overflow-y: auto;
 }
 
-/* Sezione Salva */
+/* SEZIONE SALVA */
 .save-section {
   text-align: center;
+  margin-bottom: 20px;
 }
 .save-btn {
   background: #28a745;
@@ -142,9 +147,9 @@ body {
   font-size: 16px;
 }
 
-/* Classe per sfondo custom */
-.teddy-card.custom-bg {
+/* SFONDO PERSONALIZZATO (se impostato) */
+.app-container.custom-bg {
   background-size: cover;
   background-position: center;
-  color: #fff; /* se lo sfondo è scuro */
+  background-repeat: no-repeat;
 }
