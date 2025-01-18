@@ -1,96 +1,96 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teddy NFC - Pagina Personalizzata</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 
-  <div class="main-wrapper">
-    <!-- Card principale che racchiude tutto -->
-    <div class="teddy-card">
+<div class="app-container">
 
-      <!-- Pulsante + in alto a destra per cambiare sfondo -->
-      <div class="top-right">
-        <button id="backgroundBtn" class="btn-plus" title="Scegli sfondo">+</button>
-        <input 
-          type="file" 
-          id="backgroundInput" 
-          accept="image/*" 
-          style="display: none;"
-        />
+  <!-- Pulsante per scegliere uno sfondo globale -->
+  <div class="choose-bg">
+    <button id="backgroundBtn" class="bg-btn">Scegli Sfondo</button>
+    <input 
+      type="file" 
+      id="backgroundInput" 
+      accept="image/*" 
+      style="display: none;"
+    />
+  </div>
+
+  <!-- Card: Sezione Foto/Video (con scrolling orizzontale) -->
+  <div class="card section" id="photoSection">
+    <h2 class="section-title">Foto/Video</h2>
+    <div class="photo-gallery" id="mediaContainer">
+      <!-- Placeholder iniziale (se non ci sono foto) -->
+      <div class="placeholder" id="photoPlaceholder">
+        Nessuna foto caricata
       </div>
+    </div>
+    <button id="addMediaBtn" class="action-btn">+ Aggiungi Foto/Video</button>
+    <input 
+      type="file" 
+      id="mediaInput" 
+      accept="image/*,video/*" 
+      multiple
+      style="display: none;"
+    />
+  </div>
 
-      <!-- Sezione Foto (carousel) -->
-      <div class="section photo-section" id="photoSection">
-        <!-- Wrapper interno dove mostriamo le foto/video -->
-        <div class="photo-carousel" id="mediaContainer">
-          <!-- Quando non ci sono foto, mostriamo un segnaposto -->
-          <div class="placeholder" id="photoPlaceholder">
-            + Add Photo
-          </div>
-        </div>
-        <!-- Pulsante per aggiungere immagini/video -->
-        <button class="add-btn" id="addMediaBtn">+ Add photo</button>
-        <input 
-          type="file" 
-          id="mediaInput" 
-          accept="image/*,video/*" 
-          multiple 
-          style="display: none;"
-        />
+  <!-- Card: Sezione Audio -->
+  <div class="card section" id="audioSection">
+    <h2 class="section-title">Audio</h2>
+    <div class="audio-container" id="audioContainer">
+      <div class="placeholder">
+        Nessun audio caricato
       </div>
+    </div>
+    <button id="addAudioBtn" class="action-btn">+ Aggiungi Audio</button>
+    <input 
+      type="file" 
+      id="audioInput" 
+      accept="audio/*" 
+      style="display: none;"
+    />
+  </div>
 
-      <!-- Sezione Audio -->
-      <div class="section audio-section" id="audioSection">
-        <div class="audio-placeholder" id="audioContainer">
-          + Add audio
-        </div>
-        <button class="add-btn" id="addAudioBtn">+ Add audio</button>
-        <input 
-          type="file" 
-          id="audioInput" 
-          accept="audio/*" 
-          style="display: none;"
-        />
-      </div>
+  <!-- Card: Sezione Testo -->
+  <div class="card section" id="textSection">
+    <h2 class="section-title">Testo</h2>
+    
+    <!-- Barra formattazione -->
+    <div class="toolbar" id="toolbar">
+      <select id="fontSelect" class="tool-item">
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Courier New">Courier New</option>
+      </select>
+      <button class="tool-item" id="boldBtn"><b>B</b></button>
+      <button class="tool-item" id="italicBtn"><i>I</i></button>
+      <button class="tool-item" id="underlineBtn"><u>U</u></button>
+      <input type="color" id="colorPicker" class="tool-item" />
+    </div>
 
-      <!-- Sezione Testo -->
-      <div class="section text-section" id="textSection">
+    <!-- Editor di testo -->
+    <div 
+      class="text-editor" 
+      id="textEditor" 
+      contenteditable="true">
+      <!-- Placeholder iniziale -->
+      Scrivi qui il tuo messaggio...
+    </div>
+  </div>
 
-        <!-- Barra di formattazione (se la vuoi visibile sempre) -->
-        <div class="toolbar" id="toolbar">
-          <select id="fontSelect">
-            <option value="Arial">Arial</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Courier New">Courier New</option>
-          </select>
-          <button class="format-btn" id="boldBtn"><b>B</b></button>
-          <button class="format-btn" id="italicBtn"><i>I</i></button>
-          <button class="format-btn" id="underlineBtn"><u>U</u></button>
-          <input type="color" id="colorPicker" />
-        </div>
+  <!-- Pulsante Salvataggio definitivo -->
+  <div class="save-section">
+    <button id="saveBtn" class="save-btn">Salva</button>
+  </div>
 
-        <!-- Area di testo modificabile -->
-        <div 
-          contenteditable="true" 
-          class="text-editor" 
-          id="textEditor">
-          <!-- Segnaposto iniziale -->
-          <p style="color: #888">Scrivi qui il tuo messaggio...</p>
-        </div>
-      </div>
+</div> <!-- fine app-container -->
 
-      <!-- Pulsante Salva -->
-      <div class="section save-section">
-        <button class="save-btn" id="saveBtn">Salva</button>
-      </div>
-
-    </div> <!-- fine teddy-card -->
-  </div> <!-- fine main-wrapper -->
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
