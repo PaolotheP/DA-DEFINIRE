@@ -1,164 +1,153 @@
-/************************************************************
- * script.js - Gestisce caricamento immagini, audio, testo,
- *             scrolling orizzontale e salvataggio finale.
- ************************************************************/
-let isFinal = false;
+/* RESET DI BASE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-// Riferimenti
-const backgroundBtn    = document.getElementById('backgroundBtn');
-const backgroundInput  = document.getElementById('backgroundInput');
+/* BODY */
+body {
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
 
-const mediaContainer   = document.getElementById('mediaContainer');
-const photoPlaceholder = document.getElementById('photoPlaceholder');
-const addMediaBtn      = document.getElementById('addMediaBtn');
-const mediaInput       = document.getElementById('mediaInput');
+/* RIQUADRO PRINCIPALE */
+.outer-card {
+  position: relative; 
+  width: 90%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 20px;
+  overflow: hidden; /* per mascherare eventuali sfondo in eccesso */
+}
 
-const audioContainer   = document.getElementById('audioContainer');
-const addAudioBtn      = document.getElementById('addAudioBtn');
-const audioInput       = document.getElementById('audioInput');
+/* PULSANTE + (SFONDO) in alto a destra */
+.plus-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #666;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
 
-const fontSelect       = document.getElementById('fontSelect');
-const boldBtn          = document.getElementById('boldBtn');
-const italicBtn        = document.getElementById('italicBtn');
-const underlineBtn     = document.getElementById('underlineBtn');
-const colorPicker      = document.getElementById('colorPicker');
-const textEditor       = document.getElementById('textEditor');
+/* BOX DELLE FOTO */
+.photo-box {
+  margin-top: 20px; /* distanziamento dall'alto */
+  text-align: center;
+}
 
-const saveBtn          = document.getElementById('saveBtn');
-const appContainer     = document.querySelector('.app-container');
+/* L'area che mostra la foto (o il carousel) */
+.photo-view {
+  position: relative;
+  width: 100%;
+  height: 200px; 
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;      /* con un carousel semplice, mostriamo 1 elemento alla volta */
+  align-items: center;
+  justify-content: center;
+}
 
-/**
- * 1) Scegliere uno sfondo globale
- */
-backgroundBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    backgroundInput.click();
-  }
-});
-backgroundInput.addEventListener('change', (e) => {
-  if (!isFinal && e.target.files && e.target.files[0]) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      appContainer.style.backgroundImage = `url('${ev.target.result}')`;
-      appContainer.classList.add('custom-bg');
-    };
-    reader.readAsDataURL(file);
-  }
-});
+/* Segnaposto iniziale (se non ci sono foto) */
+.photo-placeholder {
+  color: #888;
+  font-size: 1.1rem;
+}
 
-/**
- * 2) Aggiunta Foto/Video con scrolling orizzontale
- */
-addMediaBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    mediaInput.click();
-  }
-});
-mediaInput.addEventListener('change', (e) => {
-  if (!isFinal) {
-    const files = e.target.files;
-    for (let file of files) {
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        let element;
-        if (file.type.startsWith('image')) {
-          element = document.createElement('img');
-          element.src = ev.target.result;
-          element.style.maxHeight = "200px";
-        } else if (file.type.startsWith('video')) {
-          element = document.createElement('video');
-          element.src = ev.target.result;
-          element.controls = true;
-          element.style.maxHeight = "200px";
-        }
+/* Pulsante per caricare foto */
+.file-btn {
+  margin-top: 10px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-        // Rimuovo il placeholder se presente
-        if (photoPlaceholder) {
-          photoPlaceholder.remove();
-        }
-        mediaContainer.appendChild(element);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-});
+/* Dots per il carousel */
+.dots-container {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+}
+.dot.active {
+  background: #333;
+}
 
-/**
- * 3) Aggiunta Audio
- */
-addAudioBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    audioInput.click();
-  }
-});
-audioInput.addEventListener('change', (e) => {
-  if (!isFinal && e.target.files && e.target.files[0]) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      // Pulisco l'area e inserisco audio
-      audioContainer.innerHTML = "";
-      const audioEl = document.createElement('audio');
-      audioEl.src = ev.target.result;
-      audioEl.controls = true;
-      audioContainer.appendChild(audioEl);
-    };
-    reader.readAsDataURL(file);
-  }
-});
+/* AUDIO BOX */
+.audio-box {
+  margin-top: 20px;
+  text-align: center;
+}
+.audio-inner {
+  border: 2px solid #ccc;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  margin-bottom: 10px;
+}
 
-/**
- * 4) Toolbar di formattazione testo
- */
-fontSelect.addEventListener('change', () => {
-  if (!isFinal) {
-    document.execCommand('fontName', false, fontSelect.value);
-  }
-});
-boldBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    document.execCommand('bold', false, null);
-  }
-});
-italicBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    document.execCommand('italic', false, null);
-  }
-});
-underlineBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    document.execCommand('underline', false, null);
-  }
-});
-colorPicker.addEventListener('change', () => {
-  if (!isFinal) {
-    document.execCommand('foreColor', false, colorPicker.value);
-  }
-});
+/* TEXT BOX (bordo nero) */
+.text-box {
+  margin-top: 20px;
+  text-align: center;
+  border: 2px solid #000; /* bordo nero */
+  border-radius: 8px;
+  padding: 10px;
+}
+.text-area {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-size: 1rem;
+  font-family: inherit;
+}
 
-/**
- * 5) Salvataggio definitivo
- */
-saveBtn.addEventListener('click', () => {
-  if (!isFinal) {
-    isFinal = true;
-    // Disabilita l'editor
-    textEditor.contentEditable = false;
-    
-    // Disabilita i pulsanti
-    addMediaBtn.disabled   = true;
-    addAudioBtn.disabled   = true;
-    backgroundBtn.disabled = true;
-    fontSelect.disabled    = true;
-    boldBtn.disabled       = true;
-    italicBtn.disabled     = true;
-    underlineBtn.disabled  = true;
-    colorPicker.disabled   = true;
-    
-    saveBtn.textContent = "Salvato";
-    saveBtn.disabled    = true;
+/* SALVA */
+.save-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.save-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
 
-    // (Opzionale) Invia i dati a un server per memorizzare in modo permanente.
-  }
-});
+/* CLASSE DI SFONDO PERSONALIZZATO */
+.outer-card.custom-bg {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
