@@ -18,7 +18,7 @@
     body {
       margin: 0;
       padding: 20px;
-      background-color: #f5f5f5;
+      background-color: #fce4ec; /* Sfondo rosa chiaro */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -46,33 +46,33 @@
       display: none;
     }
 
-    /* BACKGROUND */
-    .background-section label {
+    /* LABEL generiche (pulsanti caricamento file) con sfumature di rosa */
+    label {
       display: inline-block;
-      background-color: #28a745;
+      background-color: #ec407a; /* Rosa scuro */
       color: #fff;
       padding: 10px 15px;
       border-radius: 8px;
       cursor: pointer;
       margin-bottom: 10px;
+      transition: background-color 0.3s;
     }
-    .background-section input[type="file"] {
-      display: none;
+    label:hover {
+      background-color: #d81b60; /* Sfumatura un po' più scura */
+    }
+    input[type="file"] {
+      display: none; /* Nascosto, gestito da label */
+    }
+
+    /* BACKGROUND (sezione) - personalizzo solo se serve differenziare */
+    .background-section label {
+      background-color: #e91e63;
+    }
+    .background-section label:hover {
+      background-color: #c2185b;
     }
 
     /* FOTO */
-    #photoSection label {
-      display: inline-block;
-      background-color: #007BFF;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-    #photoSection input[type="file"] {
-      display: none;
-    }
     .photo-preview {
       display: flex;
       justify-content: center;
@@ -93,34 +93,23 @@
       margin: 0 5px;
       padding: 5px 10px;
       border: none;
-      background-color: #007BFF;
+      background-color: #ec407a;
       color: #fff;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
     .photo-controls button:hover {
-      background-color: #0056b3;
+      background-color: #d81b60;
     }
 
     /* AUDIO */
-    #audioSection label {
-      display: inline-block;
-      background-color: #17a2b8;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-    #audioSection input[type="file"] {
-      display: none;
-    }
     .audio-preview {
       margin-top: 10px;
     }
     .record-btn, .stop-btn {
       display: inline-block;
-      background-color: #dc3545;
+      background-color: #f06292;
       color: #fff;
       padding: 8px 14px;
       border-radius: 8px;
@@ -128,15 +117,18 @@
       border: none;
       margin-top: 10px;
       margin-right: 10px;
+      transition: background-color 0.3s;
     }
     .record-btn:hover, .stop-btn:hover {
-      background-color: #bd2130;
+      background-color: #ec407a;
     }
 
     /* TESTO + TOOLBAR */
     .text-section label {
       display: block;
       margin-bottom: 8px;
+      font-weight: bold;
+      color: #ad1457;
     }
     .toolbar {
       display: flex;
@@ -148,11 +140,15 @@
       padding: 6px 10px;
       border-radius: 4px;
       border: 1px solid #ccc;
-      background-color: #f2f2f2;
+      background-color: #f8bbd0;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
-    .toolbar select {
-      min-width: 120px;
+    .toolbar button:hover {
+      background-color: #f48fb1;
+    }
+    .toolbar select:hover, .toolbar input[type="color"]:hover {
+      background-color: #f48fb1;
     }
     .text-editor {
       min-height: 120px;
@@ -167,7 +163,7 @@
     /* PULSANTE SALVA DEFINITIVO */
     .save-final-btn {
       display: inline-block;
-      background-color: #28a745;
+      background-color: #ec407a;
       color: #fff;
       padding: 10px 15px;
       border-radius: 8px;
@@ -175,9 +171,10 @@
       border: none;
       font-size: 18px;
       margin-top: 20px;
+      transition: background-color 0.3s;
     }
     .save-final-btn:hover {
-      background-color: #218838;
+      background-color: #d81b60;
     }
   </style>
 </head>
@@ -245,22 +242,22 @@
     import { getFirestore, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // TODO: Sostituisci con le TUE chiavi di configurazione:
+    // =================== SOSTITUISCI QUI CON LE TUE CHIAVI ===================
     const firebaseConfig = {
-      apiKey: "QUI_LA_TUA_APIKEY",
+      apiKey: "API_KEY_CHE_DEVI_SOSTITUIRE",
       authDomain: "abearforyou.firebaseapp.com",
       projectId: "abearforyou",
       storageBucket: "abearforyou.firebasestorage.app",
       messagingSenderId: "726663203029",
       appId: "1:726663203029:web:7992da9c143e3ff480ba5c"
     };
+    // =========================================================================
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Definiamo un ID fisso (per demo). 
-    // In un progetto reale potresti generare un ID univoco per ogni orsetto.
-    const PAGE_ID = "myBearPage";
+    // Scegli un ID di documento (se ne hai già usato uno, ma era lockato, usa un nuovo ID!)
+    const PAGE_ID = "myBearPageTest2";
 
     /******************************
      *  2) VARIABILI GLOBALI
@@ -338,6 +335,7 @@
         }
       }
     });
+
     // AUDIO da file
     audioInput.addEventListener('change', () => {
       if (audioInput.files[0]) {
@@ -390,7 +388,7 @@
         photoPreview.appendChild(img);
       }
     }
-    // Funzioni da bottone
+    // Funzioni di scorrimento foto
     window.prevImage = function() {
       if (currentImageIndex > 0) {
         currentImageIndex--;
@@ -496,7 +494,8 @@
           lockUI();
         }
       } else {
-        console.log("Nessun documento trovato, pagina vuota.");
+        console.log("Nessun documento trovato (pagina vuota).");
+        // isLocked resta false
       }
     });
 
@@ -504,14 +503,14 @@
      *  7) SALVATAGGIO DEFINITIVO
      ******************************/
     async function saveFinal() {
+      // Se risulta già locked, avviso
       if (isLocked) {
-        alert("Pagina già bloccata!");
+        alert("La pagina risulta già bloccata!");
         return;
       }
       // 1) Raccogliamo i dati attuali
       const textContent = textEditor.innerHTML;
-      // set locked = true
-      isLocked = true;
+      isLocked = true; // la stiamo bloccando
 
       // 2) Salviamo su Firestore
       const ref = doc(db, "pages", PAGE_ID);
@@ -525,11 +524,10 @@
       try {
         await setDoc(ref, payload);
         alert("Salvato definitivamente!");
-        // 3) Blocca l’UI
         lockUI();
       } catch (err) {
         console.error(err);
-        alert("Errore durante il salvataggio. Vedi console.");
+        alert("Errore durante il salvataggio. Controlla la console.");
       }
     }
 
@@ -544,7 +542,7 @@
       startRecordBtn.disabled = true;
       stopRecordBtn.disabled = true;
 
-      document.getElementById('fontSelect').disabled = true;
+      fontSelect.disabled = true;
       boldBtn.disabled = true;
       italicBtn.disabled = true;
       underlineBtn.disabled = true;
