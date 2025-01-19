@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pagina NFC Interattiva</title>
+  <title>Orsetto NFC - Salvataggio Definitivo</title>
 
-  <!-- Font un po' romantico -->
+  <!-- Font romantico -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link 
@@ -23,9 +23,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-
-      /* Font "Dancing Script" */
-      font-family: 'Dancing Script', cursive;
+      font-family: 'Dancing Script', cursive; 
       font-size: 18px;
     }
     .container {
@@ -37,15 +35,18 @@
       padding: 20px;
       border: 1px solid #ddd;
       position: relative;
-
-      /* Per gestire uno sfondo personalizzato via JS */
+      /* Per lo sfondo personalizzato (base64) */
       background-size: cover;
       background-position: center;
     }
     .section {
       margin-bottom: 20px;
     }
-    /* ---------- BACKGROUND ---------- */
+    .hidden {
+      display: none;
+    }
+
+    /* BACKGROUND */
     .background-section label {
       display: inline-block;
       background-color: #28a745;
@@ -59,7 +60,7 @@
       display: none;
     }
 
-    /* ---------- FOTO ---------- */
+    /* FOTO */
     #photoSection label {
       display: inline-block;
       background-color: #007BFF;
@@ -101,7 +102,7 @@
       background-color: #0056b3;
     }
 
-    /* ---------- AUDIO ---------- */
+    /* AUDIO */
     #audioSection label {
       display: inline-block;
       background-color: #17a2b8;
@@ -117,7 +118,6 @@
     .audio-preview {
       margin-top: 10px;
     }
-    /* Pulsanti per registrare audio */
     .record-btn, .stop-btn {
       display: inline-block;
       background-color: #dc3545;
@@ -133,7 +133,7 @@
       background-color: #bd2130;
     }
 
-    /* ---------- TESTO + TOOLBAR ---------- */
+    /* TESTO + TOOLBAR */
     .text-section label {
       display: block;
       margin-bottom: 8px;
@@ -154,7 +154,6 @@
     .toolbar select {
       min-width: 120px;
     }
-
     .text-editor {
       min-height: 120px;
       border: 1px solid #ccc;
@@ -165,15 +164,26 @@
       resize: none;
     }
 
-    /* ---------- UTILE ---------- */
-    .hidden {
-      display: none;
+    /* PULSANTE SALVA DEFINITIVO */
+    .save-final-btn {
+      display: inline-block;
+      background-color: #28a745;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    .save-final-btn:hover {
+      background-color: #218838;
     }
   </style>
 </head>
 <body>
   <div class="container" id="mainContainer">
-    <!-- Sezione per SCEGLIERE SFONDO -->
+    <!-- Sezione SFONDO -->
     <div class="section background-section">
       <label for="bgInput">Aggiungi sfondo</label>
       <input type="file" id="bgInput" accept="image/*">
@@ -195,16 +205,15 @@
       <label for="audioInput">Aggiungi audio</label>
       <input type="file" id="audioInput" accept="audio/*">
       
-      <!-- Pulsanti per registrare audio -->
+      <!-- Pulsanti registrazione -->
       <button class="record-btn" id="startRecordBtn">Inizia Registrazione</button>
       <button class="stop-btn hidden" id="stopRecordBtn">Termina Registrazione</button>
     </div>
     <div id="audioPreview" class="audio-preview"></div>
 
-    <!-- Sezione TESTO con toolbar -->
+    <!-- Sezione TESTO -->
     <div class="section text-section">
       <label>Scrivi il tuo messaggio</label>
-      <!-- Toolbar di formattazione -->
       <div class="toolbar">
         <select id="fontSelect">
           <option value="Arial">Arial</option>
@@ -220,171 +229,136 @@
         <button type="button" id="underlineBtn"><u>U</u></button>
         <input type="color" id="colorPicker" value="#000000">
       </div>
-      <!-- Div contenteditable per testo formattabile -->
-      <div id="textEditor" class="text-editor" contenteditable="true">
-      </div>
+      <div id="textEditor" class="text-editor" contenteditable="true"></div>
     </div>
 
-  </div><!-- .container -->
+    <!-- Pulsante SALVA DEFINITIVAMENTE -->
+    <button class="save-final-btn" id="saveFinalBtn">Salva Definitivamente</button>
+  </div>
 
-  <script>
-    /********************************************************
-     *                GESTIONE BACKGROUND
-     ********************************************************/
-    const bgInput = document.getElementById('bgInput');
+  <!-- Script type="module" con Firebase e tutta la logica -->
+  <script type="module">
+    /******************************
+     *  1) IMPORT E INIZIO FIREBASE
+     ******************************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } 
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // TODO: Sostituisci con le TUE chiavi di configurazione:
+    const firebaseConfig = {
+      apiKey: "QUI_LA_TUA_APIKEY",
+      authDomain: "abearforyou.firebaseapp.com",
+      projectId: "abearforyou",
+      storageBucket: "abearforyou.firebasestorage.app",
+      messagingSenderId: "726663203029",
+      appId: "1:726663203029:web:7992da9c143e3ff480ba5c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Definiamo un ID fisso (per demo). 
+    // In un progetto reale potresti generare un ID univoco per ogni orsetto.
+    const PAGE_ID = "myBearPage";
+
+    /******************************
+     *  2) VARIABILI GLOBALI
+     ******************************/
+    let isLocked = false;           // Se true, la pagina è bloccata
+    let backgroundBase64 = "";      // sfondo
+    let imagesBase64 = [];          // array di foto
+    let currentImageIndex = 0;      // indice foto mostrata
+    let audioBase64 = "";           // un singolo audio (file o registrato)
+    let isRecording = false;
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    /******************************
+     *  3) SELETTORI DOM
+     ******************************/
     const mainContainer = document.getElementById('mainContainer');
-    bgInput.addEventListener('change', () => {
-      const file = bgInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          mainContainer.style.backgroundImage = `url('${e.target.result}')`;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    /********************************************************
-     *                GESTIONE FOTO (carousel a step)
-     ********************************************************/
-    let currentImageIndex = 0;
-    let imageFiles = [];
+    const bgInput = document.getElementById('bgInput');
 
     const photoInput = document.getElementById('photoInput');
     const photoPreview = document.getElementById('photoPreview');
     const photoControls = document.getElementById('photoControls');
-
-    photoInput.addEventListener('change', () => {
-      imageFiles = Array.from(photoInput.files);
-      if (imageFiles.length > 0) {
-        showImage(0);
-        photoControls.classList.remove('hidden');
-        // Nascondi l'etichetta e input, se vuoi bloccare dopo l'upload
-        document.getElementById('photoSection').querySelector('label').style.display = 'none';
-        photoInput.style.display = 'none';
-      }
-    });
-
-    function showImage(index) {
-      photoPreview.innerHTML = '';
-      if (imageFiles[index]) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const img = document.createElement('img');
-          img.src = reader.result;
-          photoPreview.appendChild(img);
-        };
-        reader.readAsDataURL(imageFiles[index]);
-      }
-    }
-    function nextImage() {
-      if (currentImageIndex < imageFiles.length - 1) {
-        currentImageIndex++;
-        showImage(currentImageIndex);
-      }
-    }
-    function prevImage() {
-      if (currentImageIndex > 0) {
-        currentImageIndex--;
-        showImage(currentImageIndex);
-      }
-    }
-
-    /********************************************************
-     *                GESTIONE AUDIO + REGISTRAZIONE
-     ********************************************************/
-    let mediaRecorder;
-    let recordedChunks = [];
-    let isRecording = false;
 
     const audioInput = document.getElementById('audioInput');
     const audioPreview = document.getElementById('audioPreview');
     const startRecordBtn = document.getElementById('startRecordBtn');
     const stopRecordBtn = document.getElementById('stopRecordBtn');
 
-    // Caricamento file audio
-    audioInput.addEventListener('change', () => {
-      audioPreview.innerHTML = '';
-      const file = audioInput.files[0];
-      if (file) {
-        const audioEl = document.createElement('audio');
-        audioEl.controls = true;
-        const reader = new FileReader();
-        reader.onload = () => {
-          audioEl.src = reader.result;
-          audioPreview.appendChild(audioEl);
-        };
-        reader.readAsDataURL(file);
-
-        // Nascondo label e input
-        document.getElementById('audioSection').querySelector('label').style.display = 'none';
-        audioInput.style.display = 'none';
-      }
-    });
-
-    // Avvio registrazione
-    startRecordBtn.addEventListener('click', async () => {
-      if (isRecording) return;
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        recordedChunks = [];
-
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            recordedChunks.push(event.data);
-          }
-        };
-
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-
-          audioPreview.innerHTML = '';
-          const audioEl = document.createElement('audio');
-          audioEl.controls = true;
-          audioEl.src = audioUrl;
-          audioPreview.appendChild(audioEl);
-        };
-
-        mediaRecorder.start();
-        isRecording = true;
-
-        // Mostra bottone "Termina", nascondi "Inizia"
-        startRecordBtn.style.display = 'none';
-        stopRecordBtn.classList.remove('hidden');
-
-        alert('Registrazione avviata...');
-      } catch (err) {
-        console.error('Errore nell’accesso al microfono:', err);
-        alert('Impossibile accedere al microfono (HTTPS richiesto).');
-      }
-    });
-
-    // Termine registrazione
-    stopRecordBtn.addEventListener('click', () => {
-      if (!isRecording) return;
-
-      mediaRecorder.stop();
-      isRecording = false;
-      alert('Registrazione terminata.');
-
-      // Nascondo "Termina", se vuoi potresti non farlo
-      stopRecordBtn.classList.add('hidden');
-    });
-
-    /********************************************************
-     *            GESTIONE TESTO FORMATTAZIONE
-     ********************************************************/
-    const textEditor = document.getElementById('textEditor');
-
     const fontSelect = document.getElementById('fontSelect');
     const boldBtn = document.getElementById('boldBtn');
     const italicBtn = document.getElementById('italicBtn');
     const underlineBtn = document.getElementById('underlineBtn');
     const colorPicker = document.getElementById('colorPicker');
+    const textEditor = document.getElementById('textEditor');
 
+    const saveFinalBtn = document.getElementById('saveFinalBtn');
+
+    /******************************
+     *  4) EVENTI UI
+     ******************************/
+    // SFONDO
+    bgInput.addEventListener('change', () => {
+      if (bgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          backgroundBase64 = e.target.result; // "data:image/..."
+          mainContainer.style.backgroundImage = `url('${backgroundBase64}')`;
+        };
+        reader.readAsDataURL(bgInput.files[0]);
+      }
+    });
+
+    // FOTO
+    photoInput.addEventListener('change', () => {
+      imagesBase64 = [];
+      currentImageIndex = 0;
+      if (photoInput.files.length > 0) {
+        // Carichiamo TUTTE le immagini in base64
+        let loadedCount = 0;
+        for (let file of photoInput.files) {
+          const r = new FileReader();
+          r.onload = (ev) => {
+            imagesBase64.push(ev.target.result); // data:image/...
+            loadedCount++;
+            if (loadedCount === photoInput.files.length) {
+              // Abbiamo caricato tutte
+              showImage(0);
+              photoControls.classList.remove('hidden');
+              // Nascondi l'input e label
+              document.getElementById('photoSection').querySelector('label').style.display = 'none';
+              photoInput.style.display = 'none';
+            }
+          };
+          r.readAsDataURL(file);
+        }
+      }
+    });
+    // AUDIO da file
+    audioInput.addEventListener('change', () => {
+      if (audioInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          audioBase64 = e.target.result; // "data:audio/..."
+          showAudio(audioBase64);
+        };
+        reader.readAsDataURL(audioInput.files[0]);
+
+        // Nascondi label e input
+        document.getElementById('audioSection').querySelector('label').style.display = 'none';
+        audioInput.style.display = 'none';
+      }
+    });
+
+    // AUDIO - Registrazione
+    startRecordBtn.addEventListener('click', startRecording);
+    stopRecordBtn.addEventListener('click', stopRecording);
+
+    // TESTO - Formattazione
     fontSelect.addEventListener('change', () => {
       document.execCommand('fontName', false, fontSelect.value);
     });
@@ -401,16 +375,192 @@
       document.execCommand('foreColor', false, colorPicker.value);
     });
 
-    /* 
-     * Importante: alcuni browser potrebbero bloccare 'fontName' se 
-     * i font non sono disponibili localmente. 
-     * 
-     * Se vuoi font custom da Google Fonts, potresti non riuscire 
-     * a impostarli con execCommand. 
-     * 
-     * In ogni caso, i "common fonts" (Arial, Georgia, etc.) 
-     * di solito funzionano in docCommand. 
-     */
+    // SALVATAGGIO DEFINITIVO
+    saveFinalBtn.addEventListener('click', saveFinal);
+
+    /******************************
+     *  5) FUNZIONI DI SUPPORTO
+     ******************************/
+    // Mostra immagine di indice i
+    function showImage(i) {
+      photoPreview.innerHTML = "";
+      if (imagesBase64[i]) {
+        const img = document.createElement('img');
+        img.src = imagesBase64[i];
+        photoPreview.appendChild(img);
+      }
+    }
+    // Funzioni da bottone
+    window.prevImage = function() {
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
+        showImage(currentImageIndex);
+      }
+    };
+    window.nextImage = function() {
+      if (currentImageIndex < imagesBase64.length - 1) {
+        currentImageIndex++;
+        showImage(currentImageIndex);
+      }
+    };
+
+    function showAudio(base64) {
+      audioPreview.innerHTML = "";
+      const audioEl = document.createElement('audio');
+      audioEl.controls = true;
+      audioEl.src = base64;
+      audioPreview.appendChild(audioEl);
+    }
+
+    async function startRecording() {
+      if (isRecording) return;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+        mediaRecorder.ondataavailable = (evt) => {
+          if (evt.data.size > 0) {
+            recordedChunks.push(evt.data);
+          }
+        };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: "audio/webm" });
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            audioBase64 = e.target.result; // "data:audio/webm;base64,..."
+            showAudio(audioBase64);
+          };
+          reader.readAsDataURL(blob);
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        alert("Registrazione avviata...");
+        startRecordBtn.style.display = 'none';
+        stopRecordBtn.classList.remove('hidden');
+      } catch (err) {
+        console.error(err);
+        alert("Impossibile accedere al microfono (HTTPS richiesto).");
+      }
+    }
+
+    function stopRecording() {
+      if (!isRecording) return;
+      mediaRecorder.stop();
+      isRecording = false;
+      alert("Registrazione terminata.");
+      stopRecordBtn.classList.add('hidden');
+    }
+
+    /******************************
+     *  6) CARICA DA FIRESTORE (all’avvio)
+     ******************************/
+    window.addEventListener('DOMContentLoaded', async () => {
+      const ref = doc(db, "pages", PAGE_ID);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        // Abbiamo dati salvati
+        const data = snap.data();
+        console.log("Dati trovati:", data);
+
+        isLocked = data.locked || false;
+        backgroundBase64 = data.bg || "";
+        imagesBase64 = data.photos || [];
+        currentImageIndex = 0;
+        audioBase64 = data.audio || "";
+        const textSaved = data.text || "";
+
+        // Applico sfondo
+        if (backgroundBase64) {
+          mainContainer.style.backgroundImage = `url('${backgroundBase64}')`;
+        }
+        // Foto
+        if (imagesBase64.length > 0) {
+          showImage(0);
+          photoControls.classList.remove('hidden');
+          // Nascondo label e input
+          document.getElementById('photoSection').querySelector('label').style.display = 'none';
+          photoInput.style.display = 'none';
+        }
+        // Audio
+        if (audioBase64) {
+          showAudio(audioBase64);
+          // Nascondi label e input
+          document.getElementById('audioSection').querySelector('label').style.display = 'none';
+          audioInput.style.display = 'none';
+        }
+        // Testo
+        textEditor.innerHTML = textSaved;
+
+        // Se locked === true, blocchiamo l’UI
+        if (isLocked) {
+          lockUI();
+        }
+      } else {
+        console.log("Nessun documento trovato, pagina vuota.");
+      }
+    });
+
+    /******************************
+     *  7) SALVATAGGIO DEFINITIVO
+     ******************************/
+    async function saveFinal() {
+      if (isLocked) {
+        alert("Pagina già bloccata!");
+        return;
+      }
+      // 1) Raccogliamo i dati attuali
+      const textContent = textEditor.innerHTML;
+      // set locked = true
+      isLocked = true;
+
+      // 2) Salviamo su Firestore
+      const ref = doc(db, "pages", PAGE_ID);
+      const payload = {
+        locked: true,
+        bg: backgroundBase64,
+        photos: imagesBase64,
+        audio: audioBase64,
+        text: textContent
+      };
+      try {
+        await setDoc(ref, payload);
+        alert("Salvato definitivamente!");
+        // 3) Blocca l’UI
+        lockUI();
+      } catch (err) {
+        console.error(err);
+        alert("Errore durante il salvataggio. Vedi console.");
+      }
+    }
+
+    /******************************
+     *  8) BLOCCO DELL'INTERFACCIA
+     ******************************/
+    function lockUI() {
+      // Disabilita tutti i campi
+      bgInput.disabled = true;
+      photoInput.disabled = true;
+      audioInput.disabled = true;
+      startRecordBtn.disabled = true;
+      stopRecordBtn.disabled = true;
+
+      document.getElementById('fontSelect').disabled = true;
+      boldBtn.disabled = true;
+      italicBtn.disabled = true;
+      underlineBtn.disabled = true;
+      colorPicker.disabled = true;
+
+      textEditor.contentEditable = false;
+
+      // Nascondi pulsanti di scorrimento foto
+      photoControls.style.display = 'none';
+
+      // Disabilita pulsante Salva
+      saveFinalBtn.disabled = true;
+      saveFinalBtn.style.opacity = "0.5";
+      saveFinalBtn.style.cursor = "default";
+    }
+
   </script>
 </body>
 </html>
