@@ -64,14 +64,6 @@
       display: none; /* Nascosto, gestito da label */
     }
 
-    /* BACKGROUND (sezione) - personalizzo solo se serve differenziare */
-    .background-section label {
-      background-color: #e91e63;
-    }
-    .background-section label:hover {
-      background-color: #c2185b;
-    }
-
     /* FOTO */
     .photo-preview {
       display: flex;
@@ -244,7 +236,7 @@
 
     // =================== SOSTITUISCI QUI CON LE TUE CHIAVI ===================
     const firebaseConfig = {
-      apiKey: "API_KEY_CHE_DEVI_SOSTITUIRE",
+      apiKey: "API_KEY_DA_SOSTITUIRE",
       authDomain: "abearforyou.firebaseapp.com",
       projectId: "abearforyou",
       storageBucket: "abearforyou.firebasestorage.app",
@@ -253,11 +245,12 @@
     };
     // =========================================================================
 
+    // Inizializzo Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Scegli un ID di documento (se ne hai già usato uno, ma era lockato, usa un nuovo ID!)
-    const PAGE_ID = "myBearPageTest2";
+    // Usa un NUOVO ID per evitare conflitti con documenti già bloccati
+    const PAGE_ID = "myBearPageNew";
 
     /******************************
      *  2) VARIABILI GLOBALI
@@ -323,7 +316,7 @@
             imagesBase64.push(ev.target.result); // data:image/...
             loadedCount++;
             if (loadedCount === photoInput.files.length) {
-              // Abbiamo caricato tutte
+              // Tutte caricate
               showImage(0);
               photoControls.classList.remove('hidden');
               // Nascondi l'input e label
