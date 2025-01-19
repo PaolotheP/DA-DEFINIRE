@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orsetto NFC - Salvataggio Definitivo</title>
 
-  <!-- Font romantico -->
+  <!-- Font "Dancing Script" per un tocco romantico -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link 
@@ -46,7 +46,7 @@
       display: none;
     }
 
-    /* LABEL generiche (pulsanti caricamento file) con sfumature di rosa */
+    /* LABEL generiche (pulsanti caricamento file) - rosa */
     label {
       display: inline-block;
       background-color: #ec407a; /* Rosa scuro */
@@ -58,7 +58,7 @@
       transition: background-color 0.3s;
     }
     label:hover {
-      background-color: #d81b60; /* Sfumatura un po' più scura */
+      background-color: #d81b60; /* Rosa più scuro */
     }
     input[type="file"] {
       display: none; /* Nascosto, gestito da label */
@@ -101,7 +101,7 @@
     }
     .record-btn, .stop-btn {
       display: inline-block;
-      background-color: #f06292;
+      background-color: #f06292; /* Rosa un po' più tenue */
       color: #fff;
       padding: 8px 14px;
       border-radius: 8px;
@@ -168,6 +168,7 @@
     .save-final-btn:hover {
       background-color: #d81b60;
     }
+
   </style>
 </head>
 <body>
@@ -234,32 +235,30 @@
     import { getFirestore, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    // =================== SOSTITUISCI QUI CON LE TUE CHIAVI ===================
+    // Sostituisci questi valori con quelli del tuo script Firebase
     const firebaseConfig = {
-      apiKey: "API_KEY_DA_SOSTITUIRE",
+      apiKey: "AIzaSyAWitsrM9_FUV_aRgfWKJwqIQvYjB9M_w0",
       authDomain: "abearforyou.firebaseapp.com",
       projectId: "abearforyou",
       storageBucket: "abearforyou.firebasestorage.app",
       messagingSenderId: "726663203029",
-      appId: "1:726663203029:web:7992da9c143e3ff480ba5c"
+      appId: "1:726663203029:web:c16526636670ff8080ba5c"
     };
-    // =========================================================================
-
-    // Inizializzo Firebase
+    // Inizializza l'app Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Usa un NUOVO ID per evitare conflitti con documenti già bloccati
-    const PAGE_ID = "myBearPageNew";
+    // Cambia l'ID se vuoi evitare documenti già lockati
+    const PAGE_ID = "myBearPageNEW";
 
     /******************************
      *  2) VARIABILI GLOBALI
      ******************************/
-    let isLocked = false;           // Se true, la pagina è bloccata
-    let backgroundBase64 = "";      // sfondo
-    let imagesBase64 = [];          // array di foto
-    let currentImageIndex = 0;      // indice foto mostrata
-    let audioBase64 = "";           // un singolo audio (file o registrato)
+    let isLocked = false;           
+    let backgroundBase64 = "";      
+    let imagesBase64 = [];          
+    let currentImageIndex = 0;      
+    let audioBase64 = "";           
     let isRecording = false;
     let mediaRecorder;
     let recordedChunks = [];
@@ -308,7 +307,6 @@
       imagesBase64 = [];
       currentImageIndex = 0;
       if (photoInput.files.length > 0) {
-        // Carichiamo TUTTE le immagini in base64
         let loadedCount = 0;
         for (let file of photoInput.files) {
           const r = new FileReader();
@@ -338,7 +336,6 @@
           showAudio(audioBase64);
         };
         reader.readAsDataURL(audioInput.files[0]);
-
         // Nascondi label e input
         document.getElementById('audioSection').querySelector('label').style.display = 'none';
         audioInput.style.display = 'none';
@@ -381,7 +378,7 @@
         photoPreview.appendChild(img);
       }
     }
-    // Funzioni di scorrimento foto
+    // Funzioni scorrimento foto
     window.prevImage = function() {
       if (currentImageIndex > 0) {
         currentImageIndex--;
@@ -418,7 +415,7 @@
           const blob = new Blob(recordedChunks, { type: "audio/webm" });
           const reader = new FileReader();
           reader.onload = (e) => {
-            audioBase64 = e.target.result; // "data:audio/webm;base64,..."
+            audioBase64 = e.target.result; 
             showAudio(audioBase64);
           };
           reader.readAsDataURL(blob);
@@ -443,13 +440,12 @@
     }
 
     /******************************
-     *  6) CARICA DA FIRESTORE (all’avvio)
+     *  6) CARICA EVENTUALI DATI GIA' ESISTENTI (all’avvio)
      ******************************/
     window.addEventListener('DOMContentLoaded', async () => {
       const ref = doc(db, "pages", PAGE_ID);
       const snap = await getDoc(ref);
       if (snap.exists()) {
-        // Abbiamo dati salvati
         const data = snap.data();
         console.log("Dati trovati:", data);
 
@@ -482,13 +478,11 @@
         // Testo
         textEditor.innerHTML = textSaved;
 
-        // Se locked === true, blocchiamo l’UI
         if (isLocked) {
           lockUI();
         }
       } else {
-        console.log("Nessun documento trovato (pagina vuota).");
-        // isLocked resta false
+        console.log("Nessun documento trovato, pagina vuota.");
       }
     });
 
@@ -496,16 +490,13 @@
      *  7) SALVATAGGIO DEFINITIVO
      ******************************/
     async function saveFinal() {
-      // Se risulta già locked, avviso
       if (isLocked) {
         alert("La pagina risulta già bloccata!");
         return;
       }
-      // 1) Raccogliamo i dati attuali
       const textContent = textEditor.innerHTML;
       isLocked = true; // la stiamo bloccando
 
-      // 2) Salviamo su Firestore
       const ref = doc(db, "pages", PAGE_ID);
       const payload = {
         locked: true,
@@ -528,7 +519,6 @@
      *  8) BLOCCO DELL'INTERFACCIA
      ******************************/
     function lockUI() {
-      // Disabilita tutti i campi
       bgInput.disabled = true;
       photoInput.disabled = true;
       audioInput.disabled = true;
@@ -543,10 +533,8 @@
 
       textEditor.contentEditable = false;
 
-      // Nascondi pulsanti di scorrimento foto
       photoControls.style.display = 'none';
 
-      // Disabilita pulsante Salva
       saveFinalBtn.disabled = true;
       saveFinalBtn.style.opacity = "0.5";
       saveFinalBtn.style.cursor = "default";
